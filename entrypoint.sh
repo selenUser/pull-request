@@ -19,12 +19,12 @@ fi
 
 echo "INPUT_DESTINATION_BRANCH_REGEX = ${INPUT_DESTINATION_BRANCH_REGEX}"
 if [ -z "${INPUT_DESTINATION_BRANCH_REGEX}" ]; then
+  DESTINATION_BRANCH="${INPUT_DESTINATION_BRANCH:-"master"}"
+else
   branches=$(git --no-pager branch -a | grep "${INPUT_DESTINATION_BRANCH_REGEX}")
   echo "branches = $branches"
   #DESTINATION_BRANCH="$branches"
   exit 1
-else
-  DESTINATION_BRANCH="${INPUT_DESTINATION_BRANCH:-"master"}"
 fi
 
 ## Github actions no longer auto set the username and GITHUB_TOKEN
