@@ -8,10 +8,10 @@ A GitHub Action for creating pull requests.
 
 
 ## Features
- * Create pull requests
- * Add reviewers, assignees, labels, or milestones
- * Customize pull request title and body
- * Fail silently when a pull request already exists
+* Create pull requests
+* Add reviewers, assignees, labels, or milestones
+* Customize pull request title and body
+* Fail silently when a pull request already exists
 
 
 ## Usage
@@ -57,6 +57,7 @@ jobs:
       with:
         source_branch: ""                                 # If blank, default: triggered branch
         destination_branch: "master"                      # If blank, default: master
+        destination_branch_regex: ""                      # Get destination branch by regular expression
         pr_title: "Pulling ${{ github.ref }} into master" # Title of pull request
         pr_body: ":crown: *An automated PR*"              # Full markdown support, requires pr_title to be set
         pr_template: ".github/PULL_REQUEST_TEMPLATE.md"   # Path to pull request template, requires pr_title to be set, excludes pr_body

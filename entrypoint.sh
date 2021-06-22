@@ -17,7 +17,14 @@ else
   exit 1
 fi
 
-DESTINATION_BRANCH="${INPUT_DESTINATION_BRANCH:-"master"}"
+if [ -z "${INPUT_DESTINATION_BRANCH_REGEX}" ]; then
+  branches=$(git --no-pager branch -a | grep "${INPUT_DESTINATION_BRANCH_REGEX}")
+  echo "branches = $branches"
+  #DESTINATION_BRANCH="$branches"
+  exit 1
+else
+  DESTINATION_BRANCH="${INPUT_DESTINATION_BRANCH:-"master"}"
+fi
 
 # Github actions no longer auto set the username and GITHUB_TOKEN
 git remote set-url origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"

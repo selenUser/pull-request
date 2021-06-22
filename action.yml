@@ -12,6 +12,9 @@ inputs:
     description: Branch name to sync to in this repo, default is master
     required: false
     default: master
+  destination_branch_regex:
+    description: Branch name to sync to in this repo by regular expression
+    required: false
   pr_title:
     description: Pull request title
     required: false
