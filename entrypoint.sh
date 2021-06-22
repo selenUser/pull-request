@@ -23,7 +23,8 @@ if [ -z "${INPUT_DESTINATION_BRANCH_REGEX}" ]; then
 else
   branches=$(git --no-pager branch -a | grep "${INPUT_DESTINATION_BRANCH_REGEX}")
   echo "branches = $branches"
-  #DESTINATION_BRANCH="$branches"
+  DESTINATION_BRANCH="$branches"
+  echo "DESTINATION_BRANCH = $DESTINATION_BRANCH"
   exit 1
 fi
 
