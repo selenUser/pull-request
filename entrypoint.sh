@@ -73,17 +73,13 @@ if [ -z "${INPUT_DESTINATION_BRANCH_REGEX}" ]; then
 else
   branches=$(git --no-pager branch -a | grep "${INPUT_DESTINATION_BRANCH_REGEX}")
   echo "branches = ${branches}"
-  IFS="\n" read -r -a array <<< "${branches}"
-  declare -p branches
-  DESTINATION_BRANCH="$branches"
-  echo "DESTINATION_BRANCH = $DESTINATION_BRANCH"
-  for branch in "${array[@]}"; do
+  readarray -t <<<"${branches}"
+  for branch in "${MAPFILE[@]}"; do
     echo "branch = ${branch}"
     if [[ "${branch}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch}" != *"*"* ]] && [[ "${branch}" != remote* ]]; then
       run_pull_request_command "${branch}"
     fi
   done
-
 fi
 
 #PR_ARG="$INPUT_PR_TITLE"
