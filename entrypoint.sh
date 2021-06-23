@@ -1,5 +1,32 @@
 #!/usr/bin/env bash
 
+run_pull_request_command() {
+  COMMAND="hub pull-request \
+    -b $1 \
+    -h $SOURCE_BRANCH \
+    --no-edit \
+    $PR_ARG \
+    || true"
+
+  echo "$COMMAND"
+
+  PR_URL=$(sh -c "$COMMAND")
+  if [[ "$?" != "0" ]]; then
+    exit 1
+  fi
+
+  echo ${PR_URL}
+  # shellcheck disable=SC2082
+  echo "::set-output name=destination_branch::${DESTINATION_BRANCH}"
+  echo "::set-output name=pr_url::${PR_URL}"
+  echo "::set-output name=pr_number::${PR_URL##*/}"
+  if [[ "$LINES_CHANGED" == "0" ]]; then
+    echo "::set-output name=has_changed_files::false"
+  else
+    echo "::set-output name=has_changed_files::true"
+  fi
+}
+
 set -e
 set -o pipefail
 
@@ -39,7 +66,7 @@ else
   for branch in "${DESTINATION_BRANCH}"; do
     echo "branch = ${branch}"
     if [[ "${branch}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch}" != *"\*"* ]] && [[ "${branch}" != remote* ]]; then
-      run_command "${branch}"
+      run_pull_request_command "${branch}"
     fi
   done
 
@@ -91,30 +118,3 @@ export GITHUB_USER="$GITHUB_ACTOR"
 #if [[ "$INPUT_PR_DRAFT" ==  "true" ]]; then
 #  PR_ARG="$PR_ARG -d"
 #fi
-
-run_command() {
-  COMMAND="hub pull-request \
-    -b $1 \
-    -h $SOURCE_BRANCH \
-    --no-edit \
-    $PR_ARG \
-    || true"
-
-  echo "$COMMAND"
-
-  PR_URL=$(sh -c "$COMMAND")
-  if [[ "$?" != "0" ]]; then
-    exit 1
-  fi
-
-  echo ${PR_URL}
-  # shellcheck disable=SC2082
-  echo "::set-output name=destination_branch::${DESTINATION_BRANCH}"
-  echo "::set-output name=pr_url::${PR_URL}"
-  echo "::set-output name=pr_number::${PR_URL##*/}"
-  if [[ "$LINES_CHANGED" == "0" ]]; then
-    echo "::set-output name=has_changed_files::false"
-  else
-    echo "::set-output name=has_changed_files::true"
-  fi
-}
