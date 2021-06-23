@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 
 run_pull_request_command() {
+  if [ "$(git rev-parse --revs-only "$SOURCE_BRANCH")" = "$(git rev-parse --revs-only "$1")" ]; then
+    echo "Source and destination branches are the same."
+    exit 0
+  fi
+
+  # Do not proceed if there are no file differences, this avoids PRs with just a merge commit and no content
+  LINES_CHANGED=$(git diff --name-only "$1" "$SOURCE_BRANCH" -- | wc -l | awk '{print $1}')
+  if [[ "$LINES_CHANGED" == "0" ]] && [[ ! "$INPUT_PR_ALLOW_EMPTY" == "true" ]]; then
+    echo "No file changes detected between source and destination branches."
+    exit 0
+  fi
+
+  # Workaround for `hub` auth error https://github.com/github/hub/issues/2149#issuecomment-513214342
+  export GITHUB_USER="$GITHUB_ACTOR"
+
   COMMAND="hub pull-request \
     -b $1 \
     -h $SOURCE_BRANCH \
@@ -57,13 +72,12 @@ if [ -z "${INPUT_DESTINATION_BRANCH_REGEX}" ]; then
   DESTINATION_BRANCH="${INPUT_DESTINATION_BRANCH:-"master"}"
 else
   branches=$(git --no-pager branch -a | grep "${INPUT_DESTINATION_BRANCH_REGEX}")
-  # shellcheck disable=SC2128
   echo "branches = ${branches}"
+  IFS="\n" read -r -a array <<< "${branches}"
   declare -p branches
   DESTINATION_BRANCH="$branches"
   echo "DESTINATION_BRANCH = $DESTINATION_BRANCH"
-  # shellcheck disable=SC2066
-  for branch in "${branches[@]}"; do
+  for branch in "${array[@]}"; do
     echo "branch = ${branch}"
     if [[ "${branch}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch}" != *"\*"* ]] && [[ "${branch}" != remote* ]]; then
       run_pull_request_command "${branch}"
@@ -71,21 +85,6 @@ else
   done
 
 fi
-
-if [ "$(git rev-parse --revs-only "$SOURCE_BRANCH")" = "$(git rev-parse --revs-only "$DESTINATION_BRANCH")" ]; then
-  echo "Source and destination branches are the same."
-  exit 0
-fi
-
-# Do not proceed if there are no file differences, this avoids PRs with just a merge commit and no content
-LINES_CHANGED=$(git diff --name-only "$DESTINATION_BRANCH" "$SOURCE_BRANCH" -- | wc -l | awk '{print $1}')
-if [[ "$LINES_CHANGED" == "0" ]] && [[ ! "$INPUT_PR_ALLOW_EMPTY" == "true" ]]; then
-  echo "No file changes detected between source and destination branches."
-  exit 0
-fi
-
-# Workaround for `hub` auth error https://github.com/github/hub/issues/2149#issuecomment-513214342
-export GITHUB_USER="$GITHUB_ACTOR"
 
 #PR_ARG="$INPUT_PR_TITLE"
 #if [[ ! -z "$PR_ARG" ]]; then
