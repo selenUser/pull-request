@@ -11,7 +11,7 @@ fi
 if [[ ! -z "$INPUT_SOURCE_BRANCH" ]]; then
   SOURCE_BRANCH="$INPUT_SOURCE_BRANCH"
 elif [[ ! -z "$GITHUB_REF" ]]; then
-  SOURCE_BRANCH=${GITHUB_REF/refs\/heads\//}  # Remove branch prefix
+  SOURCE_BRANCH=${GITHUB_REF/refs\/heads\//} # Remove branch prefix
 else
   echo "Set the INPUT_SOURCE_BRANCH environment variable or trigger from a branch."
   exit 1
@@ -33,13 +33,13 @@ else
   # shellcheck disable=SC2128
   echo "branches = ${branches}"
   declare -p branches
-  echo "branches[1] = ${branches[1]}"
   DESTINATION_BRANCH="{$branches}"
   echo "DESTINATION_BRANCH = $DESTINATION_BRANCH"
-  for branch in ${branches} ; do
+  # shellcheck disable=SC2066
+  for branch in "${DESTINATION_BRANCH}"; do
     echo "branch = ${branch}"
     if [[ "${branch}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch}" != *"\*"* ]] && [[ "${branch}" != remote* ]]; then
-      run_command "$branch"
+      run_command "${branch}"
     fi
   done
 
@@ -52,11 +52,10 @@ fi
 
 # Do not proceed if there are no file differences, this avoids PRs with just a merge commit and no content
 LINES_CHANGED=$(git diff --name-only "$DESTINATION_BRANCH" "$SOURCE_BRANCH" -- | wc -l | awk '{print $1}')
-if [[ "$LINES_CHANGED" = "0" ]] && [[ ! "$INPUT_PR_ALLOW_EMPTY" ==  "true" ]]; then
+if [[ "$LINES_CHANGED" == "0" ]] && [[ ! "$INPUT_PR_ALLOW_EMPTY" == "true" ]]; then
   echo "No file changes detected between source and destination branches."
   exit 0
 fi
-
 
 # Workaround for `hub` auth error https://github.com/github/hub/issues/2149#issuecomment-513214342
 export GITHUB_USER="$GITHUB_ACTOR"
@@ -93,7 +92,7 @@ export GITHUB_USER="$GITHUB_ACTOR"
 #  PR_ARG="$PR_ARG -d"
 #fi
 
-run_command(){
+run_command() {
   COMMAND="hub pull-request \
     -b $1 \
     -h $SOURCE_BRANCH \
@@ -113,7 +112,7 @@ run_command(){
   echo "::set-output name=destination_branch::${DESTINATION_BRANCH}"
   echo "::set-output name=pr_url::${PR_URL}"
   echo "::set-output name=pr_number::${PR_URL##*/}"
-  if [[ "$LINES_CHANGED" = "0" ]]; then
+  if [[ "$LINES_CHANGED" == "0" ]]; then
     echo "::set-output name=has_changed_files::false"
   else
     echo "::set-output name=has_changed_files::true"
