@@ -17,6 +17,14 @@ else
   exit 1
 fi
 
+# Github actions no longer auto set the username and GITHUB_TOKEN
+git remote set-url origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+
+# Pull all branches references down locally so subsequent commands can see them
+git fetch origin '+refs/heads/*:refs/heads/*' --update-head-ok
+
+# Print out all branches
+#git --no-pager branch -a -vv
 echo "INPUT_DESTINATION_BRANCH_REGEX = ${INPUT_DESTINATION_BRANCH_REGEX}"
 if [ -z "${INPUT_DESTINATION_BRANCH_REGEX}" ]; then
   DESTINATION_BRANCH="${INPUT_DESTINATION_BRANCH:-"master"}"
@@ -28,15 +36,6 @@ else
   DESTINATION_BRANCH="$branches"
   echo "DESTINATION_BRANCH = $DESTINATION_BRANCH"
 fi
-
-# Github actions no longer auto set the username and GITHUB_TOKEN
-git remote set-url origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
-
-# Pull all branches references down locally so subsequent commands can see them
-git fetch origin '+refs/heads/*:refs/heads/*' --update-head-ok
-
-# Print out all branches
-#git --no-pager branch -a -vv
 
 if [ "$(git rev-parse --revs-only "$SOURCE_BRANCH")" = "$(git rev-parse --revs-only "$DESTINATION_BRANCH")" ]; then
   echo "Source and destination branches are the same."
