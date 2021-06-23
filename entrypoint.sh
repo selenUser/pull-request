@@ -79,7 +79,7 @@ else
   echo "DESTINATION_BRANCH = $DESTINATION_BRANCH"
   for branch in "${array[@]}"; do
     echo "branch = ${branch}"
-    if [[ "${branch}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch}" != *"\*"* ]] && [[ "${branch}" != remote* ]]; then
+    if [[ "${branch}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch}" != *"*"* ]] && [[ "${branch}" != remote* ]]; then
       run_pull_request_command "${branch}"
     fi
   done
