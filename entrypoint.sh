@@ -32,7 +32,7 @@ run_pull_request_command() {
 
   echo ${PR_URL}
   # shellcheck disable=SC2082
-  echo "::set-output name=destination_branch::${DESTINATION_BRANCH}"
+  echo "::set-output name=destination_branch::$1"
   echo "::set-output name=pr_url::${PR_URL}"
   echo "::set-output name=pr_number::${PR_URL##*/}"
   if [[ "$LINES_CHANGED" == "0" ]]; then
