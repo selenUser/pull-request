@@ -29,11 +29,12 @@ echo "INPUT_DESTINATION_BRANCH_REGEX = ${INPUT_DESTINATION_BRANCH_REGEX}"
 if [ -z "${INPUT_DESTINATION_BRANCH_REGEX}" ]; then
   DESTINATION_BRANCH="${INPUT_DESTINATION_BRANCH:-"master"}"
 else
-  branches=($(git --no-pager branch -a | grep "${INPUT_DESTINATION_BRANCH_REGEX}"))
-  echo "branches = $branches"
+  branches=($(git --no-pager branch -a | grep \""${INPUT_DESTINATION_BRANCH_REGEX}"\"))
+  # shellcheck disable=SC2128
+  echo "branches = ${branches}"
   declare -p branches
   echo "branches[1] = ${branches[1]}"
-  DESTINATION_BRANCH="$branches"
+  DESTINATION_BRANCH="{$branches}"
   echo "DESTINATION_BRANCH = $DESTINATION_BRANCH"
 fi
 
