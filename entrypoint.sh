@@ -78,7 +78,10 @@ else
     echo "branch = ${branch}"
     branch_trim=$(echo "${branch}" | sed 's/ *$//g')
     echo "branch_trim = ${branch_trim}"
+    branch_trim=$(echo "${branch}" | xargs)
+    echo "branch_trim 2 = ${branch_trim}"
     if [[ "${branch_trim}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch_trim}" != *"*"* ]] && [[ "${branch_trim}" != remote* ]]; then
+      echo "in with ${branch_trim}"
       run_pull_request_command "${branch_trim}"
     fi
   done
