@@ -76,7 +76,7 @@ else
   readarray -t <<<"${branches}"
   for branch in "${MAPFILE[@]}"; do
     echo "branch = ${branch}"
-    branch_trim="${branch}" | sed 's/ *$//g'
+    branch_trim=$(echo "${branch}" | sed 's/ *$//g')
     echo "branch_trim = ${branch_trim}"
     if [[ "${branch_trim}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch_trim}" != *"*"* ]] && [[ "${branch_trim}" != remote* ]]; then
       run_pull_request_command "${branch_trim}"
