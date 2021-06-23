@@ -42,6 +42,19 @@ run_pull_request_command() {
   fi
 }
 
+run_merge(){
+  COMMAND="hub merge ${PR_URL}"
+
+  echo "$COMMAND"
+
+  MERGE=$(sh -c "$COMMAND")
+  if [[ "$?" != "0" ]]; then
+    exit 1
+  fi
+
+  echo "${MERGE}"
+}
+
 set -e
 set -o pipefail
 
@@ -83,6 +96,7 @@ else
     if [[ "${branch_trim}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch_trim}" != *"*"* ]] && [[ "${branch_trim}" != remote* ]]; then
       echo "in with ${branch_trim}"
       run_pull_request_command "${branch_trim}"
+      run_merge
     fi
   done
 fi
