@@ -25,7 +25,6 @@ else
   echo "branches = $branches"
   DESTINATION_BRANCH="$branches"
   echo "DESTINATION_BRANCH = $DESTINATION_BRANCH"
-  exit 1
 fi
 
 # Github actions no longer auto set the username and GITHUB_TOKEN
