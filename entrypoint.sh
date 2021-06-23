@@ -60,10 +60,10 @@ else
   # shellcheck disable=SC2128
   echo "branches = ${branches}"
   declare -p branches
-  DESTINATION_BRANCH="{$branches}"
+  DESTINATION_BRANCH="$branches"
   echo "DESTINATION_BRANCH = $DESTINATION_BRANCH"
   # shellcheck disable=SC2066
-  for branch in DESTINATION_BRANCH; do
+  for branch in "${branches[@]}"; do
     echo "branch = ${branch}"
     if [[ "${branch}" != "${INPUT_DESTINATION_BRANCH_REGEX}" ]] && [[ "${branch}" != *"\*"* ]] && [[ "${branch}" != remote* ]]; then
       run_pull_request_command "${branch}"
