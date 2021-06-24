@@ -80,6 +80,7 @@ git fetch origin '+refs/heads/*:refs/heads/*' --update-head-ok
 
 # Print out all branches
 #git --no-pager branch -a -vv
+
 echo "INPUT_DESTINATION_BRANCH_REGEX = ${INPUT_DESTINATION_BRANCH_REGEX}"
 if [ -z "${INPUT_DESTINATION_BRANCH_REGEX}" ]; then
   DESTINATION_BRANCH="${INPUT_DESTINATION_BRANCH:-"master"}"
